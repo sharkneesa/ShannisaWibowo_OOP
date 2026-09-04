@@ -57,6 +57,7 @@ public class Player {
         if (hp>0){
             return true;
         }
+
         else{
             return false;
         }
