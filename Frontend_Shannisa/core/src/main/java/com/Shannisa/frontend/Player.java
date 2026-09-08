@@ -17,12 +17,12 @@ public class Player {
     public void takeDamage(int damage) {
         // 1. Reduce hp by the damage value.
 
-        hp=hp-damage;
+        this.hp=this.hp-damage;
 
         // 2. HP must not become negative.
 
-        if (hp<0){
-            hp=0;
+        if (this.hp<0){
+            this.hp=0;
         }
 
         // 3. If HP is still greater than 0, display the remaining HP in the format: [PlayerName] took [damage] damage! Remaining HP: [hp]
@@ -30,12 +30,11 @@ public class Player {
         // 4. If HP reaches 0, display a message that the Player has been defeated.
 
         if (hp>0){
-            System.out.println(name + "took" + damage + "damage!" + "Remaining HP:" + hp);
+            System.out.println(name + "took" + damage + "damage!" + "Remaining HP:" + this.hp);
         }
-        else if (hp==0) {
-            System.out.println("Player has been defeated");
+        if (this.hp == 0) {
+            System.out.println(name + " was defeated! ");
         }
-
     }
 
     public void shoot(Enemy target) {
@@ -54,13 +53,7 @@ public class Player {
 
     public boolean isAlive() {
         // 1. Return true if hp > 0, and false otherwise
-        if (hp>0){
-            return true;
-        }
-
-        else{
-            return false;
-        }
+        return this.hp > 0;
     }
 
 
