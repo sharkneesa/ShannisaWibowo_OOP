@@ -1,29 +1,78 @@
 package com.Shannisa.frontend;
+import com.badlogic.gdx.graphics.Color;
 
-public class Enemy {
-    String name;
-    int hp;
-    int maxHp;
+public class Enemy extends GameObject{
+    protected String name;
+    protected int hp;
+    protected int maxHp;
+    protected long scoreValue;
+    protected int maxHP;
 
     public Enemy(String name, int hp){
+        super(200, 380, 24,24,0,Color.PINK);
+
         this.name=name;
         this.hp=hp;
-        this.maxHp=hp;
+        this.maxHP=hp;
     }
 
-    public void takeDamage(int damage) {
+    public Enemy(float x, float y, float width, float height, Color color, String name, int hp, long scoreValue) {
+        super(x,y,width,height, 0, color);
+
+        this.name=name;
+        this.hp=hp;
+        this.maxHP=hp;
+
+
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public int getMaxHp(){
+        return this.maxHP;
+    }
+
+    public long getScoreValue(){
+        return this.scoreValue;
+    }
+
+    public int getHp(){
+        return this.hp;
+    }
+
+    public void setName(String name){
+        this.name=name;
+    }
+
+    public void setHp(int hp) {
+        this.hp = Math.max(0, hp);
+    }
+
+    public void setScoreValue(long scoreValue){
+        this.scoreValue=scoreValue;
+    }
+
+
+
+
+    public boolean takeDamage(int damage) {
         // 1. Reduce hp by the damage value.
-        this.hp=this.hp-damage;
-        // 2. HP must not go below 0.
-        if (this.hp<0){
-            this.hp=0;
+        if(getHp()==0){
+            return false;
         }
-        // 3. Display the current HP in the format: [EnemyName] took [damage] damage! HP: [currentHP]/[maxHP]
-        System.out.println(name + "took" + damage + "damage!" + "Remaining HP:" + this.hp + "/" + this.maxHp);
-        // 4. If HP reaches 0, display that the Enemy has been defeated, in the format: [EnemyName] was defeated!
-        if (this.hp==0){
-            System.out.println(name + "was defeated!");
+        setHp(getHp() - damage);
+        if (getHp()==0){
+            System.out.println(getName() + "was defeated!");
+            return true;
         }
+        else{
+            System.out.println(getName() + "took" + damage + "damage!" + "Remaining HP:" + getHp() + "/" + getMaxHp());
+            return false;
+        }
+
+
     }
 
     public void attack(Player player, int damage) {
