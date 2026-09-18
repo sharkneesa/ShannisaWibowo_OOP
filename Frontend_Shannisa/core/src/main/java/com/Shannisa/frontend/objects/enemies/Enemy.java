@@ -1,7 +1,9 @@
-package com.Shannisa.frontend;
+package com.Shannisa.frontend.objects.enemies;
 import com.badlogic.gdx.graphics.Color;
+import com.Shannisa.frontend.objects.GameObject;
+import com.Shannisa.frontend.objects.Player;
 
-public class Enemy extends GameObject{
+public class Enemy extends GameObject {
     protected String name;
     protected int hp;
     protected int maxHp;
@@ -78,7 +80,7 @@ public class Enemy extends GameObject{
     public void attack(Player player, int damage) {
         // 1. Display information that the Enemy is attacking the Player, in the format: [EnemyName] unleashes bullet barrage on [PlayerName]!
 
-        System.out.println(name + "unleashes bullet barrage on" + player.name);
+        System.out.println(name + "unleashes bullet barrage on" + player.getName());
 
         // 2. Call the Player's takeDamage() method using the given damage.
 

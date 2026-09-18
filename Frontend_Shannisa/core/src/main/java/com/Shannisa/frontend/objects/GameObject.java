@@ -1,9 +1,12 @@
-package com.Shannisa.frontend;
+package com.Shannisa.frontend.objects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public abstract class GameObject {
+import com.badlogic.gdx.math.Rectangle;
+
+
+public abstract class GameObject implements Collideable{
     protected float x;
     protected float y;
     protected float width;
@@ -69,8 +72,6 @@ public abstract class GameObject {
         this.color=color;
     }
 
-
-
     public void update(float data){
     //left empty since not every subclass is required to use this method, if it's an abstract then the other
         //subclasses are forced to use it
@@ -79,6 +80,23 @@ public abstract class GameObject {
     public void render(ShapeRenderer shapeRenderer){
         shapeRenderer.setColor(color);
         shapeRenderer.rect(x,y,width,height);
+    }
+
+    @Override
+    public Rectangle getCoreHitbox() {
+        // TODO: return a new Rectangle matching this object's x, y, width, height
+        return new Rectangle(x,y,width,height);
+    }
+
+    @Override
+    public Rectangle getGrazeHitbox() {
+        // TODO: return a Rectangle with +10px padding on every side
+        return new Rectangle(x-10,y-10,width+20,height+20);
+    }
+
+    @Override
+    public void onCollision(Collideable other) {
+        // Base collision handler (can be overridden by subclasses that need to react)
     }
 
 }

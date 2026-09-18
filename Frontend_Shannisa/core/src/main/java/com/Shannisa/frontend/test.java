@@ -1,5 +1,11 @@
 package com.Shannisa.frontend;
 
+import com.Shannisa.frontend.objects.enemies.Boss;
+import com.Shannisa.frontend.objects.enemies.Enemy;
+import com.Shannisa.frontend.objects.enemies.Fairy;
+import com.Shannisa.frontend.objects.items.Item;
+import com.Shannisa.frontend.objects.Player;
+
 public class test {
     public static void main(String[] args) {
         System.out.println("=== TOUHOU OOP PRACTICUM - MODULE 1: BASIC CLASSES & OBJECT INTERACTION ===");
