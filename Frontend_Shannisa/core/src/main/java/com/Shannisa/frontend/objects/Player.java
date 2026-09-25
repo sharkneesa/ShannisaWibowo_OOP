@@ -1,5 +1,6 @@
 package com.Shannisa.frontend.objects;
 
+import com.Shannisa.frontend.objects.bullets.Bullet;
 import com.Shannisa.frontend.objects.enemies.Enemy;
 import com.Shannisa.frontend.objects.items.Item;
 import com.Shannisa.frontend.objects.items.ItemType;
@@ -49,6 +50,8 @@ public class Player extends GameObject {
     public int getSpellCards(){
         return this.spellCards;
     }
+
+    public long getScore(){return this.score;}
 
     public void setName(String name){
         this.name=name;
@@ -100,6 +103,16 @@ public class Player extends GameObject {
 
         target.takeDamage(damage);
     }
+
+    public Bullet shootBullet() {
+        int damage = 10 + power;
+        System.out.println(name + " shoots bullet dealing " + damage + " DMG!");
+        // TODO: return a new Bullet positioned at the top-center of the Player
+        // (x + width/2 - 4, y + height), with BulletType.AMULET as its type,
+        // and the damage calculated above
+        return new Bullet(x+width/2-4,y+height,BulletType.AMULET,damage);
+    }
+
 
     public boolean isAlive() {
         // 1. Return true if hp > 0, and false otherwise
@@ -153,6 +166,14 @@ public class Player extends GameObject {
             addScore(item.getScoreValue());
             System.out.println(name + " collected " + item.getItemType() + "!");
         }
+    }
+
+    public void collectItem(Item item) {
+        if (item.isDestroyed()) return; // Prevent the item from being collected twice in the same frame
+        // ... switch-case for the item type that you created previously ...
+        // TODO: Mark this item as destroyed so it can later be removed by the Iterator
+        // Call the item's destroy() method here!
+        destroy();
     }
 
 

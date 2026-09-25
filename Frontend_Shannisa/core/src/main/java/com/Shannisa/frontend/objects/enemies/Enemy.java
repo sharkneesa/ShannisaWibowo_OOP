@@ -60,22 +60,21 @@ public class Enemy extends GameObject {
 
 
     public boolean takeDamage(int damage) {
-        // 1. Reduce hp by the damage value.
-        if(getHp()==0){
-            return false;
+        boolean wasAlive = isAlive();
+        this.hp -= damage;
+        if (this.hp < 0) {
+            this.hp = 0;
         }
-        setHp(getHp() - damage);
-        if (getHp()==0){
-            System.out.println(getName() + "was defeated!");
+        System.out.println(name + " took " + damage + " damage! HP: " + this.hp + "/" + this.maxHp);
+        if (wasAlive && this.hp == 0) {
+            System.out.println(name + " was defeated!");
+            // TODO: mark this enemy as destroyed
+            destroy();
             return true;
         }
-        else{
-            System.out.println(getName() + "took" + damage + "damage!" + "Remaining HP:" + getHp() + "/" + getMaxHp());
-            return false;
-        }
-
-
+        return false;
     }
+
 
     public void attack(Player player, int damage) {
         // 1. Display information that the Enemy is attacking the Player, in the format: [EnemyName] unleashes bullet barrage on [PlayerName]!
