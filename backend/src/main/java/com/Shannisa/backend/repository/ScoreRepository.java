@@ -4,6 +4,7 @@ package com.Shannisa.backend.repository;
 import com.Shannisa.backend.model.Score;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,9 +17,7 @@ public interface ScoreRepository extends JpaRepository<Score, UUID> {
     List <Score> findByPointGreaterThan(Integer minValue);
     // TODO: create a "findAllByOrderByCreatedAtDesc" method that will return List<Score>
     List <Score> findAllByOrderByCreatedAtDesc();
-    @Query("SELECT s FROM Score s ORDER BY s.point DESC")
-    // TODO: create a "findTopScores" method with Integer limit as the parameter, this method will return List<Score>
-    List<Score> findTopScores(Integer limit);
-
+    @Query(value = "SELECT * FROM scores ORDER BY point DESC LIMIT :limit", nativeQuery = true)
+    List<Score> findTopScores(@Param("limit") Integer limit);
 }
 
