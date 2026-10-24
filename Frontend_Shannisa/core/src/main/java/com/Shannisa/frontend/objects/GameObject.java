@@ -2,7 +2,9 @@ package com.Shannisa.frontend.objects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
 
@@ -14,6 +16,9 @@ public abstract class GameObject implements Collideable{
     protected float speed;
     protected Color color;
     protected boolean active = true;
+    protected TextureRegion sprite;
+    protected Animation<TextureRegion> animation;
+    protected float stateTime = 0f;
 
 
 
@@ -74,15 +79,26 @@ public abstract class GameObject implements Collideable{
         this.color=color;
     }
 
-    public void update(float data){
-    //left empty since not every subclass is required to use this method, if it's an abstract then the other
-        //subclasses are forced to use it
+    public void update(float delta){
+        // TODO: Increase the object's internal time so its animation advances
+        stateTime += delta;
     }
 
     public void render(ShapeRenderer shapeRenderer) {
         if (shapeRenderer != null && color != null && active/* TODO: add a condition that the object is still active */) {
             shapeRenderer.setColor(color);
             shapeRenderer.rect(x, y, width, height);
+        }
+    }
+
+    public void render(SpriteBatch batch) {
+        if (batch != null && active) {
+            if (animation != null) {
+                TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
+                batch.draw(currentFrame, x, y, width, height);
+            } else if (sprite != null) {
+                batch.draw(sprite, x, y, width, height);
+            }
         }
     }
 
@@ -119,10 +135,26 @@ public abstract class GameObject implements Collideable{
         return new Rectangle(x-10,y-10,width+20,height+20);
     }
 
+    public TextureRegion getSprite() {
+        return sprite;
+    }
+
+    public void setSprite(TextureRegion sprite) {
+        this.sprite = sprite;
+    }
+
+    public Animation<TextureRegion> getAnimation() {
+        return animation;
+    }
+
+    public void setAnimation(Animation<TextureRegion> animation) {
+        this.animation = animation;
+    }
+
     @Override
     public void onCollision(Collideable other) {
         // Base collision handler (can be overridden by subclasses that need to react)
     }
 
-    public abstract void onCollision(Collidable other);
+
 }

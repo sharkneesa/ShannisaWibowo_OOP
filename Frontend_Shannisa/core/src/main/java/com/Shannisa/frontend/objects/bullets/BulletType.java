@@ -1,4 +1,4 @@
-package com.Shannisa.frontend.objects;
+package com.Shannisa.frontend.objects.bullets;
 
 public enum BulletType {
         DANMAKU,

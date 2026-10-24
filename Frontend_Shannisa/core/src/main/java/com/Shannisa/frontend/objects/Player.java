@@ -1,12 +1,18 @@
 package com.Shannisa.frontend.objects;
 
 import com.Shannisa.frontend.objects.bullets.Bullet;
+import com.Shannisa.frontend.objects.bullets.BulletType;
 import com.Shannisa.frontend.objects.enemies.Enemy;
 import com.Shannisa.frontend.objects.items.Item;
 import com.Shannisa.frontend.objects.items.ItemType;
+import com.Shannisa.frontend.systems.AssetManager;
+import com.Shannisa.frontend.systems.AudioManager;
+import com.Shannisa.frontend.systems.EntityFactory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Player extends GameObject {
 
@@ -15,9 +21,10 @@ public class Player extends GameObject {
     private int power;
     private int spellCards;
     private long score;
+    private int currentDir = 0;
 
     public Player(String name, int hp, int power, int spellCards){
-        super(280,40,32,32,200f, Color.RED);
+        super(280,40,32,48,200f, Color.RED);
 
         this.name=name;
         this.hp=hp;
@@ -26,7 +33,7 @@ public class Player extends GameObject {
     }
 
     public Player(float x, float y, String name, int hp, int power, int spellCards){
-        super(x, y, 32, 32, 200f, Color.RED);
+        super(x, y, 32, 48, 200f, Color.RED);
 
         this.name=name;
         this.hp=hp;
@@ -107,10 +114,12 @@ public class Player extends GameObject {
     public Bullet shootBullet() {
         int damage = 10 + power;
         System.out.println(name + " shoots bullet dealing " + damage + " DMG!");
-        // TODO: return a new Bullet positioned at the top-center of the Player
-        // (x + width/2 - 4, y + height), with BulletType.AMULET as its type,
-        // and the damage calculated above
-        return new Bullet(x+width/2-4,y+height,BulletType.AMULET,damage);
+
+        AudioManager.getInstance().playSound("shoot");
+
+        // TODO: Return a Bullet using EntityFactory
+        // with the same x and y formulas as in the previous implementation.
+        return EntityFactory.createPlayerBullet(x + width / 2 - 4, y + height, damage);
     }
 
 
@@ -127,77 +136,171 @@ public class Player extends GameObject {
     }
 
     public void collectItem(Item item) {
+
+        // Prevent collecting the same item twice
+        if (item.isDestroyed()) {
+            return;
+        }
+
         ItemType type = item.getItemTypeEnum();
+
         if (type != null) {
             switch (type) {
+
                 case POWER -> {
-                    // 1. Increase power by type.getPowerBonus() via this.power
-                    // 2. Add score by item.getScoreValue() via addScore() (addScore() already automatically prints "gained X pts!")
-                    // 3. Print: [name] collected POWER item! Power increased to [power]
-                    this.power+= type.getPowerBonus();
+                    this.power += type.getPowerBonus();
                     addScore(item.getScoreValue());
-                    System.out.println(getName()  + " collected POWER item!"+ "Power is Increased to " + getPower()
+                    System.out.println(
+                        getName() + " collected POWER item! Power increased to " + getPower()
                     );
                 }
+
                 case POINT -> {
-                    // 1. Add score by item.getScoreValue() via addScore()
-                    // 2. Print: [name] collected POINT item!
                     addScore(item.getScoreValue());
-                    System.out.println(getName()+ " collected POINT item!");
+                    System.out.println(
+                        getName() + " collected POINT item!"
+                    );
                 }
+
                 case BOMB -> {
-                    // 1. Increase spellCards by 1
-                    // 2. Add score by item.getScoreValue() via addScore()
-                    // 3. Print: [name] collected BOMB item! SpellCards: [spellCards]
                     this.spellCards++;
                     addScore(item.getScoreValue());
-                    System.out.println(getName()+ " collected BOMB item! SpellCards: "+ getSpellCards());
+                    System.out.println(
+                        getName() + " collected BOMB item! SpellCards: " + getSpellCards()
+                    );
                 }
+
                 case LIFE -> {
-                    // 1. Increase hp by 20
-                    // 2. Add score by item.getScoreValue() via addScore()
-                    // 3. Print: [name] collected LIFE item! HP: [hp]
-                    this.hp+=20;
+                    this.hp += 20;
                     addScore(item.getScoreValue());
-                    System.out.println(getName()+ " collected LIFE item! HP: "+getHp());
+                    System.out.println(
+                        getName() + " collected LIFE item! HP: " + getHp()
+                    );
                 }
             }
         } else {
             addScore(item.getScoreValue());
-            System.out.println(name + " collected " + item.getItemType() + "!");
+
+            System.out.println(
+                name + " collected " + item.getItemType() + "!"
+            );
         }
+
+        // Mark the ITEM as destroyed after collecting it
+        AudioManager.getInstance().playSound("chime");
+        item.destroy();
     }
 
-    public void collectItem(Item item) {
-        if (item.isDestroyed()) return; // Prevent the item from being collected twice in the same frame
-        // ... switch-case for the item type that you created previously ...
-        // TODO: Mark this item as destroyed so it can later be removed by the Iterator
-        // Call the item's destroy() method here!
-        destroy();
-    }
 
 
     @Override
     public void update(float delta) {
+
+        // TODO 1: Call GameObject's update(delta) through super.
+        super.update(delta);
+
+        // TODO 2: Declare a local float variable dx with an initial value of 0
+        float dx = 0;
+
         if (Gdx.input != null) {
-            // TODO: Check W / UP input   → y += speed * delta
-            if (Gdx.input.isKeyPressed(Input.Keys.W)||Gdx.input.isKeyPressed(Input.Keys.UP)){
-                y+=speed*delta;
+
+            if (Gdx.input.isKeyPressed(Input.Keys.W) ||
+                Gdx.input.isKeyPressed(Input.Keys.UP)) {
+
+                y += speed * delta;
             }
-            else if (Gdx.input.isKeyPressed(Input.Keys.S)||Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+
+            if (Gdx.input.isKeyPressed(Input.Keys.S) ||
+                Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+
                 y -= speed * delta;
             }
-            else if (Gdx.input.isKeyPressed(Input.Keys.A) ||Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+
+            if (Gdx.input.isKeyPressed(Input.Keys.A) ||
+                Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+
                 x -= speed * delta;
+
+                // TODO 3: Adjust dx to match the direction.
+                dx = -1;
             }
-            else if (Gdx.input.isKeyPressed(Input.Keys.D)||Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+
+            if (Gdx.input.isKeyPressed(Input.Keys.D) ||
+                Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+
                 x += speed * delta;
+
+                // TODO 4: Adjust dx to match the direction.
+                dx = 1;
             }
-            // TODO: Check S / DOWN input → y -= speed * delta
-            // TODO: Check A / LEFT input → x -= speed * delta
-            // TODO: Check D / RIGHT input → x += speed * delta
+        }
+
+        // TODO 5: Call updateAnimationState(dx)
+        updateAnimationState(dx);
+    }
+
+    public void updateAnimationState(float dx) {
+        AssetManager assets = AssetManager.getInstance();
+        if (dx < 0) {
+            // TODO:
+            // 1. Only make the following changes if currentDir is not -1.
+            // 2. Set currentDir to -1.
+            // 3. Retrieve the "player_left" animation using assets.getAnimation(...).
+            //    Store it in a local variable of type Animation<TextureRegion> named anim.
+            // 4. If anim is not null, assign it using setAnimation(...).
+            if (currentDir != -1) {
+                currentDir = -1;
+
+                Animation<TextureRegion> anim =
+                    assets.getAnimation("player_left");
+
+                if (anim != null) {
+                    setAnimation(anim);
+                }
+            }
+        }
+        else if (dx > 0) {
+
+            // TODO:
+            // 1. Only make the following changes if currentDir is not 1.
+            // 2. Set currentDir to 1.
+            // 3. Retrieve the "player_right" animation using assets.getAnimation(...).
+            //    Store it in a local variable of type Animation<TextureRegion> named anim.
+            // 4. If anim is not null, assign it using setAnimation(...).
+
+            if (currentDir != 1) {
+                currentDir = 1;
+
+                Animation<TextureRegion> anim =
+                    assets.getAnimation("player_right");
+
+                if (anim != null) {
+                    setAnimation(anim);
+                }
+            }
+
+
+        } else {
+            // TODO:
+            // 1. Only make the following changes if currentDir is not 0.
+            // 2. Set currentDir to 0.
+            // 3. Retrieve the "player_idle" animation using assets.getAnimation(...).
+            //    Store it in a local variable of type Animation<TextureRegion> named anim.
+            // 4. If anim is not null, assign it using setAnimation(...).
+            if (currentDir != 0) {
+                currentDir = 0;
+
+                Animation<TextureRegion> anim =
+                    assets.getAnimation("player_idle");
+
+                if (anim != null) {
+                    setAnimation(anim);
+                }
+            }
+
         }
     }
+
 
     @Override
     public void onCollision(Collideable other) {

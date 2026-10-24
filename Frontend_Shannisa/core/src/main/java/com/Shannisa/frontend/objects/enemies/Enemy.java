@@ -1,4 +1,5 @@
 package com.Shannisa.frontend.objects.enemies;
+import com.Shannisa.frontend.systems.AudioManager;
 import com.badlogic.gdx.graphics.Color;
 import com.Shannisa.frontend.objects.GameObject;
 import com.Shannisa.frontend.objects.Player;
@@ -6,7 +7,6 @@ import com.Shannisa.frontend.objects.Player;
 public class Enemy extends GameObject {
     protected String name;
     protected int hp;
-    protected int maxHp;
     protected long scoreValue;
     protected int maxHP;
 
@@ -65,11 +65,12 @@ public class Enemy extends GameObject {
         if (this.hp < 0) {
             this.hp = 0;
         }
-        System.out.println(name + " took " + damage + " damage! HP: " + this.hp + "/" + this.maxHp);
+        System.out.println(name + " took " + damage + " damage! HP: " + this.hp + "/" + this.maxHP);
         if (wasAlive && this.hp == 0) {
             System.out.println(name + " was defeated!");
             // TODO: mark this enemy as destroyed
             destroy();
+            AudioManager.getInstance().playSound("echo");
             return true;
         }
         return false;

@@ -1,6 +1,5 @@
 package com.Shannisa.frontend.objects.bullets;
 
-import com.Shannisa.frontend.objects.BulletType;
 import com.Shannisa.frontend.objects.Collideable;
 import com.Shannisa.frontend.objects.GameObject;
 import com.Shannisa.frontend.objects.enemies.Enemy;
@@ -11,14 +10,14 @@ public class Bullet extends GameObject {
     private int damage;
 
     public Bullet(float x, float y, BulletType bulletType, int damage) {
-        super(x, y, 8, 16, 400f, Color.YELLOW);
+        super(x, y, 16, 16, 400f, Color.YELLOW);
         // TODO: initialize bulletType and damage from the parameters
         this.bulletType=bulletType;
         this.damage=damage;
     }
 
     public Bullet(float x, float y, float speed, BulletType bulletType, int damage) {
-        super(x, y, 8, 16, speed, Color.YELLOW);
+        super(x, y, 16, 16, speed, Color.YELLOW);
         // TODO: initialize bulletType and damage from the parameters
         this.bulletType=bulletType;
         this.damage=damage;
