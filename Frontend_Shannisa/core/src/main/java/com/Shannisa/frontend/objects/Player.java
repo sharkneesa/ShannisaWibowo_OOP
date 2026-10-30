@@ -5,23 +5,54 @@ import com.Shannisa.frontend.objects.bullets.BulletType;
 import com.Shannisa.frontend.objects.enemies.Enemy;
 import com.Shannisa.frontend.objects.items.Item;
 import com.Shannisa.frontend.objects.items.ItemType;
+import com.Shannisa.frontend.objects.patterns.ShootingPattern;
 import com.Shannisa.frontend.systems.AssetManager;
 import com.Shannisa.frontend.systems.AudioManager;
+import com.Shannisa.frontend.systems.BulletManager;
 import com.Shannisa.frontend.systems.EntityFactory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Player extends GameObject {
-
     private String name;
     private int hp;
     private int power;
     private int spellCards;
     private long score;
     private int currentDir = 0;
+
+    // TODO: Declare a private field named shootingPattern of type ShootingPattern.
+    //       No need to initialize it right away.
+    private ShootingPattern shootingPattern;
+    // ...
+
+    // TODO: Update shootBullet() to shootBullet(BulletManager bulletManager)!
+    public void shootBullet(BulletManager bulletManager) {
+        // - If bulletManager is null, return immediately
+        // - If shootingPattern is not null, call execute() from the player's muzzle coordinates (x + width / 2f - 8f, y + height)
+        // - If shootingPattern is null, call bulletManager.spawnPlayerBullet() directly
+        if (bulletManager == null) {
+            return;
+        }
+
+        AudioManager.getInstance().playSound("shoot");
+        if (shootingPattern != null) {
+
+            shootingPattern.execute(x + width / 2f - 8f, y + height, bulletManager, true);
+        }
+        else{
+            bulletManager.spawnPlayerBullet(x + width / 2f - 8f, y + height, 0f, 400f, 10 + power);
+        }
+
+    }
+
+    // ...
+
+    // TODO: Provide a getter and setter for shootingPattern
 
     public Player(String name, int hp, int power, int spellCards){
         super(280,40,32,48,200f, Color.RED);
@@ -312,8 +343,21 @@ public class Player extends GameObject {
         // TODO: Print "Player touches items" then call collectItem((Item) other)
     }
 
+    @Override
+    public Rectangle getCoreHitbox() {
+        // TODO: Return a new 8x8 Rectangle centered right in the middle of the sprite:
+        // - X coordinate: x + (width / 2f) - 4f
+        // - Y coordinate: y + (height / 2f) - 4f
+        // - width: 8f, height: 8f
+        return new Rectangle(x + (width / 2f) - 4f, y + (height / 2f) - 4f, 8f, 8f);
+    }
 
-
+    @Override
+    public Rectangle getGrazeHitbox() {
+        // TODO: Return a new Rectangle at position coordinates (x, y)
+        //       covering the entire visual sprite dimensions (width, height)
+        return new Rectangle(x,y,width,height);
+    }
 
 
 }

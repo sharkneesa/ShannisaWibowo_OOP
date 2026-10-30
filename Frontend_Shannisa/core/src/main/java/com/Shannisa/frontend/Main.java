@@ -28,7 +28,10 @@ public class Main extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
 
     // TODO 1: Declare fields for Player, Fairy, Boss, Items, and List<GameObject>
-
+    // TODO: Create a private field to store BulletManager
+    // TODO: Create a private field to store CollisionReferee
+    
+    private float enemyShootTimer = 0f;
     private Player player;
     private Boss boss;
     private List<GameObject> entities;
